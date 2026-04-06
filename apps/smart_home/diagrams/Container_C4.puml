@@ -5,11 +5,24 @@ top to bottom direction
 
 Person(user, "User", "A user of warmhouse system")
 Person(admin, "Admin", "A staff from the company")
-
 System(service, "WarmHouse Service", "Heating and monitoring system")
 
-Rel(admin, service, "Add new devices to the system")
-Rel(user, service, "Request temperature or switch on/off heating")
-Rel(service, user, "Display temperature")
+System_Ext(Sensors, "Temerature sensors", "Measure temperature")
+System_Ext(Heating, "Heating system controllers", "Can turn on/off heating")
+System_Ext(PaymantService, "Paymant Service", "External paymant service")
+
+Container_Boundary(service, "WarmHouse Service") {
+  Container(WebApp, "Web Application", "Browser", "User interface")
+  Container(Monolith, "Warm House Service", "Go", "Handles business logic and device interaction")
+  ContainerDb(Database, "Database", "PostgreSQL", "Stores users and devices data")
+}
+
+Rel(admin, WebApp, "Add new devices to the system")
+Rel(user, WebApp, "Request temperature or switch on/off heating")
+Rel(WebApp, Monolith, "Make requests to the monolith")
+Rel(Monolith, Database, "Write/read data about users and system")
+Rel(Monolith, Sensors, "Request temperature")
+Rel(Monolith, Heating, "Turn on/off heating")
+Rel(Monolith, PaymantService, "Request paymant")
 
 @enduml 
