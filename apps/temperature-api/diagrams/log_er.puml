@@ -1,0 +1,24 @@
+@startuml
+
+class UserServiceLog {
+    RequestID
+    Timestamp
+    errorMessage
+    Request
+}
+
+class TemperatureServiceLog {
+    RequestID
+    Timestamp
+    errorMessage
+    Request
+}
+
+class HeatingSystemServiceLog {
+    RequestID
+    Timestamp
+    errorMessage
+    Request
+}
+
+@enduml
