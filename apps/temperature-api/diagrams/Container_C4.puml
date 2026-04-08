@@ -1,45 +1,48 @@
 @startuml
-top to bottom direction
-
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 Person(user, "User")
 Person(admin, "Admin")
 
 System(system, "Smart Home System")
-
-System_Ext(devices, "IoT Devices", "Sensors and heating controllers")
-System_Ext(PaymantService, "Paymant Service", "External paymant service")
+System_Ext(payment, "Payment Service", "External payment service")
+System_Ext(extDevices, "IoT Devices", "Sensors and heating controllers")
 
 Container_Boundary(system, "Smart Home System") {
-
-    Container(api, "API Gateway", "Go", "Entry point for clients")
-
-    Container(userService, "User Service", "Go", "Manages users")
-    Container(temperatureService, "Temperature Service", "Go", "Processes temperature")
-    Container(heatingService, "Heating Service", "Go", "Controls heating")
-    Container(logging, "Logging System", "Log data from other services")
-    ContainerDb(db, "PostgreSQL", "Shared DB (logically separated)")
+    Container(api, "API Gateway", "Go", "Handles requests from users/admins")
+    Container(deviceAPI, "Device API Gateway", "Gin", "Handles requests from extDevices")
+    Container(userService, "User Service", "Go", "Manages users and subscriptions")
+    Container(automationService, "Automation Service", "Go", "Executes user-defined rules automatically")
+    Container(deviceService, "Device Service", "Go", "Controls smart devices")
+    Container(telemetry, "Telemetry Service", "Go", "Manage telemetry sensors")
+    Container(logging, "Logging System", "Go", "Centralized logging")
+    ' ContainerDb(db, "PostgreSQL", "Stores user, device, and telemetry data")
 }
 
 Rel(user, api, "Uses")
-Rel(admin, api, "Manages")
+Rel(admin, api, "Manages system")
 
-Rel(api, userService, "Call")
-Rel(api, temperatureService, "Call")
-Rel(api, heatingService, "Call")
+Rel(api, userService, "Calls")
+Rel(api, telemetry, "Calls")
+Rel(api, deviceService, "Calls")
+Rel(api, automationService, "Calls")
 
-Rel(userService, db, "SQL")
-Rel(temperatureService, db, "SQL")
-Rel(heatingService, db, "SQL")
-Rel(logging, db, "SQL")
+' Device API к сервисам
+Rel(deviceAPI, telemetry, "Sends telemetry")
+Rel(deviceAPI, deviceService, "Receives commands")
 
-Rel(userService, logging, "Call")
-Rel(temperatureService, logging, "Call")
-Rel(heatingService, logging, "Call")
+' Автоматизация
+Rel(automationService, deviceService, "Sends commands to devices")
+Rel(telemetry, automationService, "Reads temperature data") 
 
-Rel(temperatureService, devices, "HTTP")
-Rel(heatingService, devices, "HTTP")
-Rel(userService, PaymantService, "HTTP")
+' Сервисы к БД
+' Rel(userService, db, "Reads/Writes")
+' Rel(telemetry, db, "Reads/Writes")
+' Rel(deviceService, db, "Reads/Writes")
+' Rel(logging, db, "Stores logs")
 
+' Сервисы к внешним системам
+Rel(userService, payment, "Uses for payments")
+Rel(telemetry, extDevices, "Reads data")
+Rel(deviceService, extDevices, "Sends commands")
 @enduml

@@ -1,15 +1,20 @@
-@startuml
-top to bottom direction
+@startuml user_billing
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+Person(user, "User")
 
-Person(user, "User", "A user of warmhouse system")
-Person(admin, "Admin", "A staff from the company")
+ContainerDb(db, "PostgreSQL", "Stores all data (MVP)")
+System_Ext(payment, "Payment Service", "External payment service")
 
-System(service, "Warm House Service", "Heating and monitoring system")
+Container_Boundary(system, "User & Billing Service") {
+    Component(userAPI, "User API", "REST API (Go)", "Registration, autorisation, profile view")
+    Component(userService, "User Service Logic", "Go", "Processes user account requests")
+}
 
-Rel(admin, service, "Add new devices to the system")
-Rel(user, service, "Request temperature or switch on/off heating")
-Rel(service, user, "Display temperature")
+Rel(user, userAPI, "HTTP")
+Rel(userAPI, userService, "Call")
+Rel(userService, db, "SQL")
+Rel(userService, payment, "HTTP")
 
-@enduml 
+@enduml
