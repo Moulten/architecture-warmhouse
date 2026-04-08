@@ -7,14 +7,14 @@ Person(user, "User")
 ContainerDb(db, "PostgreSQL", "Stores all data (MVP)")
 System_Ext(payment, "Payment Service", "External payment service")
 
-Container_Boundary(system, "User & Billing Service") {
+Container_Boundary(userService "User & Billing Service") {
     Component(userAPI, "User API", "REST API (Go)", "Registration, autorisation, profile view")
-    Component(userService, "User Service Logic", "Go", "Processes user account requests")
+    Component(service, "User Service Logic", "Go", "Processes user account requests")
 }
 
 Rel(user, userAPI, "HTTP")
-Rel(userAPI, userService, "Call")
-Rel(userService, db, "SQL")
-Rel(userService, payment, "HTTP")
+Rel(userAPI, service, "Call")
+Rel(service, db, "SQL")
+Rel(service, payment, "HTTP")
 
 @enduml

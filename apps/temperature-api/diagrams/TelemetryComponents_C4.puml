@@ -7,7 +7,7 @@ top to bottom direction
 System_Ext(devices, "IoT Devices", "Sensors")
 ContainerDb(db, "PostgreSQL", "Stores all data (MVP)")
 
-Container(deviceService, "Device Service", "Go") {
+Container(telemetryService, "Telemetry Service", "Go") {
 
     Component(api, "Telemetry API", "Gin", "Receives commands")
     Component(service, "Sensor Service Logic", "Go", "Processes commands")
